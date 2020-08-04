@@ -15,7 +15,9 @@
             />
           </template>
           <template v-else>
-            <i class="material-icons text-7xl text-gray" @click="selectImage">person</i>
+            <i class="material-icons text-7xl text-gray" @click="selectImage"
+              >person</i
+            >
           </template>
           <input
             ref="image"
@@ -24,13 +26,15 @@
             accept="image/*"
             @change="onSelectFile"
           />
-          <span
-            v-show="form.imageUrl.errorMessage"
-            class="text-red text-sm"
-          >{{form.imageUrl.errorMessage}}</span>
+          <span v-show="form.imageUrl.errorMessage" class="text-red text-sm">{{
+            form.imageUrl.errorMessage
+          }}</span>
         </div>
       </div>
-      <label class="block mt-8 mb-2 ml-2 uppercase tracking-wide text-darkGray text-s">名前</label>
+      <label
+        class="block mt-8 mb-2 ml-2 uppercase tracking-wide text-darkGray text-s"
+        >名前</label
+      >
       <div class="h-20 mb-6">
         <input
           v-model="form.name.val"
@@ -39,11 +43,15 @@
           class="block w-full py-3 px-4 appearance-none bg-gray-200 text-darkGray border rounded leading-tight focus:outline-none focus:bg-white"
           @blur="validateName"
         />
-        <span v-show="form.name.errorMessage" class="text-red text-sm">{{form.name.errorMessage}}</span>
+        <span v-show="form.name.errorMessage" class="text-red text-sm">{{
+          form.name.errorMessage
+        }}</span>
       </div>
 
       <div class="flex">
-        <button class="w-full p-3 gradation rounded-full text-white">登録</button>
+        <button class="w-full p-3 gradation rounded-full text-white">
+          登録
+        </button>
       </div>
     </form>
   </div>
@@ -57,15 +65,20 @@ export default {
         name: {
           label: "名前",
           val: null,
-          errorMessage: null,
+          errorMessage: null
         },
         imageUrl: {
           label: "アイコン画像",
           val: null,
-          errorMessage: null,
-        },
-      },
+          errorMessage: null
+        }
+      }
     };
+  },
+  computed: {
+    isValidateError() {
+      return this.form.name.errorMessage || this.form.imageUrl.errorMessage;
+    }
   },
   methods: {
     selectImage() {
@@ -82,7 +95,7 @@ export default {
 
       reader.addEventListener("load", () => {
         this.upload({
-          localImageFile: files[0],
+          localImageFile: files[0]
         });
       });
     },
@@ -135,10 +148,29 @@ export default {
       imageUrl.errorMessage = null;
     },
 
-    onSubmit() {
+    async onSubmit() {
+      const user = await this.$auth();
+
+      // 未ログインの場合
+      if (!user) this.$router.push("/login");
+
       this.validateName();
       this.validateImageUrl();
-    },
-  },
+
+      if (this.isValidateError) return;
+      try {
+        await this.$firestore
+          .collection("users")
+          .doc(user.uid)
+          .set({
+            name: this.form.name.val,
+            iconImageUrl: this.form.imageUrl.val
+          });
+        this.$router.push("/");
+      } catch (e) {
+        this.setMessage({ message: "登録に失敗しました。" });
+      }
+    }
+  }
 };
 </script>
