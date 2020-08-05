@@ -1,31 +1,27 @@
 <template>
   <main class="container relative min-h-screen pt-16">
     <Header />
+    <Alert />
     <nuxt />
   </main>
 </template>
 
 <script>
-import Header from '~/components/Header'
+import Header from "~/components/Header";
+import Alert from "~/components/Alert";
 
 export default {
   components: {
-    Header
-  }
-}
+    Header,
+    Alert,
+  },
+};
 </script>
 
 <style>
 html {
-  font-family:
-    'Source Sans Pro',
-    -apple-system,
-    BlinkMacSystemFont,
-    'Segoe UI',
-    Roboto,
-    'Helvetica Neue',
-    Arial,
-    sans-serif;
+  font-family: "Source Sans Pro", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif;
   font-size: 16px;
   word-spacing: 1px;
   -ms-text-size-adjust: 100%;
